@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "miro-mcp": {
+      "command": "uvx",
+      "args": ["miro-mcp"],
+      "env": {
+        "FASTMCP_LOG_LEVEL": "ERROR"
+      },
+      "disabled": false,
+      "autoApprove": []
+    }
+  }
+}

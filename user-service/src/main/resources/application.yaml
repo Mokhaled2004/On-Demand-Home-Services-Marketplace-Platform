@@ -1,0 +1,50 @@
+spring:
+  application:
+    name: USER-SERVICE
+  
+  datasource:
+    url: jdbc:postgresql://ep-late-mountain-ami1fmbj-pooler.c-5.us-east-1.aws.neon.tech:5432/user_service_db?sslmode=require&channel_binding=require
+    username: neondb_owner
+    password: npg_kJEMe1DKpw8i
+    driver-class-name: org.postgresql.Driver
+    
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      connection-timeout: 20000
+      idle-timeout: 300000
+      max-lifetime: 1200000
+  
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        jdbc:
+          batch_size: 20
+          fetch_size: 50
+    show-sql: false
+    open-in-view: false
+
+server:
+  port: 8081
+  servlet:
+    context-path: /
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${server.port}
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 30
+
+logging:
+  level:
+    root: INFO
+    com.marketplace.user: DEBUG
+    org.hibernate.SQL: DEBUG
