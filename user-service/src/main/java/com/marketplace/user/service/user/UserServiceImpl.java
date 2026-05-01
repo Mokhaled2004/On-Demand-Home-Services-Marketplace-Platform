@@ -1,16 +1,19 @@
 package com.marketplace.user.service.user;
 
 import com.marketplace.user.entity.User;
+import com.marketplace.user.entity.Wallet;
 import com.marketplace.user.exception.InvalidCredentialsException;
 import com.marketplace.user.exception.UserAlreadyExistsException;
 import com.marketplace.user.exception.UserNotFoundException;
 import com.marketplace.user.repository.UserRepository;
+import com.marketplace.user.repository.WalletRepository;
 import com.marketplace.user.security.PasswordEncoderUtil;
-import com.marketplace.user.service.wallet.WalletService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
 
 /**
  * User Service Implementation
@@ -24,7 +27,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoderUtil passwordEncoderUtil;
-    private final WalletService walletService;
+    private final WalletRepository walletRepository;
 
     @Override
     public User register(String username, String email, String password, User.UserRole role, String professionType) {
@@ -56,8 +59,13 @@ public class UserServiceImpl implements UserService {
         User savedUser = userRepository.save(user);
         log.info("User registered successfully: {}", savedUser.getId());
 
-        // Create wallet for new user
-        walletService.createWallet(savedUser.getId());
+        // Create wallet for new user directly
+        Wallet wallet = Wallet.builder()
+                .userId(savedUser.getId())
+                .balance(BigDecimal.ZERO)
+                .currency("USD")
+                .build();
+        walletRepository.save(wallet);
         log.info("Wallet created for user: {}", savedUser.getId());
 
         return savedUser;

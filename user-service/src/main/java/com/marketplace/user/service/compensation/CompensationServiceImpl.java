@@ -23,7 +23,7 @@ public class CompensationServiceImpl implements CompensationService {
     private final CompensationLogRepository compensationLogRepository;
 
     @Override
-    public CompensationLog logDeduction(Long bookingId, Long userId, Long transactionId, BigDecimal amount) {
+    public CompensationLog logDeduction(String bookingId, Long userId, Long transactionId, BigDecimal amount) {
         log.info("Logging deduction - bookingId: {}, userId: {}, amount: {}", bookingId, userId, amount);
 
         CompensationLog compensationLog = CompensationLog.builder()
@@ -42,7 +42,7 @@ public class CompensationServiceImpl implements CompensationService {
     }
 
     @Override
-    public CompensationLog logRefund(Long bookingId, Long userId, Long transactionId, BigDecimal amount) {
+    public CompensationLog logRefund(String bookingId, Long userId, Long transactionId, BigDecimal amount) {
         log.info("Logging refund - bookingId: {}, userId: {}, amount: {}", bookingId, userId, amount);
 
         CompensationLog compensationLog = CompensationLog.builder()
@@ -73,7 +73,7 @@ public class CompensationServiceImpl implements CompensationService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<CompensationLog> getBookingCompensationHistory(Long bookingId) {
+    public List<CompensationLog> getBookingCompensationHistory(String bookingId) {
         log.info("Fetching compensation history for booking: {}", bookingId);
 
         List<CompensationLog> history = compensationLogRepository.findByBookingId(bookingId);

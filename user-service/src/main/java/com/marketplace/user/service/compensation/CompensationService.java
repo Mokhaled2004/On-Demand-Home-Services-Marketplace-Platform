@@ -13,23 +13,23 @@ public interface CompensationService {
 
     /**
      * Log a deduction from wallet
-     * @param bookingId booking ID
+     * @param bookingId booking ID (from booking_db)
      * @param userId user ID
      * @param transactionId wallet transaction ID
      * @param amount amount deducted
      * @return saved CompensationLog entity
      */
-    CompensationLog logDeduction(Long bookingId, Long userId, Long transactionId, BigDecimal amount);
+    CompensationLog logDeduction(String bookingId, Long userId, Long transactionId, BigDecimal amount);
 
     /**
      * Log a refund to wallet
-     * @param bookingId booking ID
+     * @param bookingId booking ID (from booking_db)
      * @param userId user ID
      * @param transactionId wallet transaction ID
      * @param amount amount refunded
      * @return saved CompensationLog entity
      */
-    CompensationLog logRefund(Long bookingId, Long userId, Long transactionId, BigDecimal amount);
+    CompensationLog logRefund(String bookingId, Long userId, Long transactionId, BigDecimal amount);
 
     /**
      * Get compensation history for user
@@ -40,10 +40,10 @@ public interface CompensationService {
 
     /**
      * Get compensation history for booking
-     * @param bookingId booking ID
+     * @param bookingId booking ID (from booking_db)
      * @return List of CompensationLog entries for the booking
      */
-    List<CompensationLog> getBookingCompensationHistory(Long bookingId);
+    List<CompensationLog> getBookingCompensationHistory(String bookingId);
 
     /**
      * Get pending compensation logs for user

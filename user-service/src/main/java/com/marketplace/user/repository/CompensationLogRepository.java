@@ -15,10 +15,10 @@ public interface CompensationLogRepository extends JpaRepository<CompensationLog
 
     /**
      * Find all compensation logs for a booking
-     * @param bookingId the booking ID to search for
+     * @param bookingId the booking ID (from booking_db) to search for
      * @return List of compensation logs for the booking
      */
-    List<CompensationLog> findByBookingId(Long bookingId);
+    List<CompensationLog> findByBookingId(String bookingId);
 
     /**
      * Find all compensation logs for a user
@@ -37,9 +37,9 @@ public interface CompensationLogRepository extends JpaRepository<CompensationLog
 
     /**
      * Find compensation logs by booking ID and status
-     * @param bookingId the booking ID to search for
+     * @param bookingId the booking ID (from booking_db) to search for
      * @param status the compensation status to filter by
      * @return List of compensation logs matching the criteria
      */
-    List<CompensationLog> findByBookingIdAndStatus(Long bookingId, CompensationLog.CompensationStatus status);
+    List<CompensationLog> findByBookingIdAndStatus(String bookingId, CompensationLog.CompensationStatus status);
 }

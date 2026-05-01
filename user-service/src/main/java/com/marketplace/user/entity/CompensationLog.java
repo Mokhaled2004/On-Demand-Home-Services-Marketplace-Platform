@@ -29,7 +29,7 @@ public class CompensationLog {
     private Long id;
 
     @Column(nullable = false)
-    private Long bookingId;
+    private String bookingId;
 
     @Column(nullable = false)
     private Long userId;
