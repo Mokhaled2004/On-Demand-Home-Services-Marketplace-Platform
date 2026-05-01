@@ -1,4 +1,15 @@
 package com.marketplace.user.exception;
 
-public class InvalidCredentialsException {
+/**
+ * Exception thrown when credentials are invalid
+ */
+public class InvalidCredentialsException extends RuntimeException {
+    
+    public InvalidCredentialsException(String message) {
+        super(message);
+    }
+
+    public InvalidCredentialsException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }
