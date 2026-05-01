@@ -1,4 +1,4 @@
-package com.marketplace.user_service;
+package om.marketplace.user_service;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
