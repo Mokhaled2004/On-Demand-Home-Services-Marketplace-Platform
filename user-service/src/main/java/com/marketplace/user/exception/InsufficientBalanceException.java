@@ -1,4 +1,15 @@
 package com.marketplace.user.exception;
 
-public class InsufficientBalanceException {
+/**
+ * Exception thrown when wallet balance is insufficient
+ */
+public class InsufficientBalanceException extends RuntimeException {
+    
+    public InsufficientBalanceException(String message) {
+        super(message);
+    }
+
+    public InsufficientBalanceException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }
