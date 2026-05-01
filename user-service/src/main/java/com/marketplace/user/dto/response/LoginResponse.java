@@ -10,5 +10,4 @@ public class LoginResponse {
     private String username;
     private String token;
     private User.UserRole role;
-    
 }

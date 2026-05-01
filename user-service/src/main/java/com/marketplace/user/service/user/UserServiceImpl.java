@@ -30,7 +30,7 @@ public class UserServiceImpl implements UserService {
     private final WalletRepository walletRepository;
 
     @Override
-    public User register(String username, String email, String password, User.UserRole role, String professionType) {
+    public User register(String username, String email, String password, User.UserRole role, String professionType, BigDecimal initialBalance) {
         log.info("Registering new user: {}", username);
 
         // Check if username already exists
@@ -59,14 +59,14 @@ public class UserServiceImpl implements UserService {
         User savedUser = userRepository.save(user);
         log.info("User registered successfully: {}", savedUser.getId());
 
-        // Create wallet for new user directly
+        // Create wallet for new user with initial balance
         Wallet wallet = Wallet.builder()
                 .userId(savedUser.getId())
-                .balance(BigDecimal.ZERO)
+                .balance(initialBalance != null ? initialBalance : BigDecimal.ZERO)
                 .currency("USD")
                 .build();
         walletRepository.save(wallet);
-        log.info("Wallet created for user: {}", savedUser.getId());
+        log.info("Wallet created for user: {} with initial balance: {}", savedUser.getId(), wallet.getBalance());
 
         return savedUser;
     }

@@ -34,12 +34,12 @@ public class CompensationLog {
     @Column(nullable = false)
     private Long userId;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private Long transactionId;
 
     @Column(nullable = false, length = 50)
     @Enumerated(EnumType.STRING)
-    private CompensationAction action; // DEDUCTED, REFUNDED
+    private CompensationAction action; // DEDUCT, REFUND
 
     @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal amount;
@@ -48,13 +48,16 @@ public class CompensationLog {
     @Enumerated(EnumType.STRING)
     private CompensationStatus status; // PENDING, COMPLETED, FAILED
 
+    @Column(length = 255)
+    private String reason; // Optional reason for refund or failure
+
     @CreatedDate
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     public enum CompensationAction {
-        DEDUCTED,
-        REFUNDED
+        DEDUCT,
+        REFUND
     }
 
     public enum CompensationStatus {

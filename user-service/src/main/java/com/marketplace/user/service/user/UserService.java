@@ -1,6 +1,7 @@
 package com.marketplace.user.service.user;
 
 import com.marketplace.user.entity.User;
+import java.math.BigDecimal;
 
 /**
  * User Service Interface
@@ -15,10 +16,11 @@ public interface UserService {
      * @param password plain text password (will be hashed)
      * @param role CUSTOMER or SERVICE_PROVIDER
      * @param professionType profession if SERVICE_PROVIDER
+     * @param initialBalance initial wallet balance for the user
      * @return saved User entity
      * @throws com.marketplace.user.exception.UserAlreadyExistsException if username or email exists
      */
-    User register(String username, String email, String password, User.UserRole role, String professionType);
+    User register(String username, String email, String password, User.UserRole role, String professionType, BigDecimal initialBalance);
 
     /**
      * Authenticate user with credentials

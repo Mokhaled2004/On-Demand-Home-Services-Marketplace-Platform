@@ -42,6 +42,12 @@ public class WalletTransaction {
     @Enumerated(EnumType.STRING)
     private TransactionStatus status; // PENDING, SUCCESS, FAILED
 
+    @Column(length = 100)
+    private String referenceId; // booking_id or order_id
+
+    @Column(length = 255)
+    private String description;
+
     @Column(unique = true, length = 100)
     private String idempotencyKey; // Prevent duplicate transactions
 

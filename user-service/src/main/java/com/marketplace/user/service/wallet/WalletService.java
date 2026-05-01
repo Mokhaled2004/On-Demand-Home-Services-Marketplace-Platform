@@ -22,24 +22,24 @@ public interface WalletService {
      * Deduct amount from wallet (for booking payment)
      * @param userId user ID
      * @param amount amount to deduct
-     * @param bookingId booking ID (for tracking)
+     * @param bookingId booking ID from booking_db (for tracking)
      * @param idempotencyKey unique key to prevent duplicate deductions
      * @return updated Wallet entity
      * @throws com.marketplace.user.exception.UserNotFoundException if user not found
      * @throws com.marketplace.user.exception.InsufficientBalanceException if balance < amount
      */
-    Wallet deductBalance(Long userId, BigDecimal amount, Long bookingId, String idempotencyKey);
+    Wallet deductBalance(Long userId, BigDecimal amount, String bookingId, String idempotencyKey);
 
     /**
      * Refund amount to wallet (for booking cancellation)
      * @param userId user ID
      * @param amount amount to refund
-     * @param bookingId booking ID (for tracking)
+     * @param bookingId booking ID from booking_db (for tracking)
      * @param idempotencyKey unique key to prevent duplicate refunds
      * @return updated Wallet entity
      * @throws com.marketplace.user.exception.UserNotFoundException if user not found
      */
-    Wallet refundBalance(Long userId, BigDecimal amount, Long bookingId, String idempotencyKey);
+    Wallet refundBalance(Long userId, BigDecimal amount, String bookingId, String idempotencyKey);
 
     /**
      * Add funds to wallet (customer deposit)

@@ -14,5 +14,5 @@ public class DeductBalanceRequest {
     @NotNull private long userId;
     @NotNull @DecimalMin("0.01") private BigDecimal amount;
 
-    @NotNull private Long bookingId;
+    @NotNull private String bookingId;
 }

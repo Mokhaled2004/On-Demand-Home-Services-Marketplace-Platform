@@ -6,6 +6,7 @@ import com.marketplace.user.exception.InsufficientBalanceException;
 import com.marketplace.user.exception.UserNotFoundException;
 import com.marketplace.user.repository.WalletRepository;
 import com.marketplace.user.repository.WalletTransactionRepository;
+import com.marketplace.user.service.compensation.CompensationService;
 import com.marketplace.user.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,19 +28,18 @@ public class WalletServiceImpl implements WalletService {
     private final WalletRepository walletRepository;
     private final WalletTransactionRepository walletTransactionRepository;
     private final UserService userService;
+    private final CompensationService compensationService;
 
     @Override
     @Transactional(readOnly = true)
     public Wallet getWalletBalance(Long userId) {
         log.info("Fetching wallet balance for user: {}", userId);
 
-        // Verify user exists
         if (!userService.userExists(userId)) {
             log.warn("User not found: {}", userId);
             throw new UserNotFoundException("User not found: " + userId);
         }
 
-        // Get wallet
         return walletRepository.findByUserId(userId)
                 .orElseThrow(() -> {
                     log.warn("Wallet not found for user: {}", userId);
@@ -48,13 +48,12 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
-    public Wallet deductBalance(Long userId, BigDecimal amount, Long bookingId, String idempotencyKey) {
+    public Wallet deductBalance(Long userId, BigDecimal amount, String bookingId, String idempotencyKey) {
         log.info("Deducting balance for user: {}, amount: {}, bookingId: {}", userId, amount, bookingId);
 
         // Check for duplicate transaction using idempotency key
         if (walletTransactionRepository.existsByIdempotencyKey(idempotencyKey)) {
             log.warn("Duplicate transaction detected with idempotency key: {}", idempotencyKey);
-            // Return existing wallet state
             return getWalletBalance(userId);
         }
 
@@ -64,57 +63,67 @@ public class WalletServiceImpl implements WalletService {
         // Validate sufficient balance
         if (wallet.getBalance().compareTo(amount) < 0) {
             log.warn("Insufficient balance for user: {}, required: {}, available: {}", userId, amount, wallet.getBalance());
-            throw new InsufficientBalanceException("Insufficient balance. Required: " + amount + ", Available: " + wallet.getBalance());
+            throw new InsufficientBalanceException(
+                    "Insufficient balance. Required: " + amount + ", Available: " + wallet.getBalance());
         }
 
         // Deduct balance (optimistic locking via @Version)
         wallet.setBalance(wallet.getBalance().subtract(amount));
         Wallet updatedWallet = walletRepository.save(wallet);
 
-        // Record transaction
+        // Record transaction with referenceId (bookingId)
         WalletTransaction transaction = WalletTransaction.builder()
                 .walletId(wallet.getId())
                 .transactionType(WalletTransaction.TransactionType.DEBIT)
                 .amount(amount)
+                .referenceId(bookingId)
+                .description("Booking payment for booking: " + bookingId)
                 .status(WalletTransaction.TransactionStatus.SUCCESS)
                 .idempotencyKey(idempotencyKey)
                 .build();
 
-        walletTransactionRepository.save(transaction);
+        WalletTransaction savedTransaction = walletTransactionRepository.save(transaction);
         log.info("Balance deducted successfully for user: {}, new balance: {}", userId, updatedWallet.getBalance());
+
+        // Log compensation entry for audit/rollback
+        compensationService.logDeduction(bookingId, userId, savedTransaction.getId(), amount);
 
         return updatedWallet;
     }
 
     @Override
-    public Wallet refundBalance(Long userId, BigDecimal amount, Long bookingId, String idempotencyKey) {
+    public Wallet refundBalance(Long userId, BigDecimal amount, String bookingId, String idempotencyKey) {
         log.info("Refunding balance for user: {}, amount: {}, bookingId: {}", userId, amount, bookingId);
 
         // Check for duplicate transaction using idempotency key
         if (walletTransactionRepository.existsByIdempotencyKey(idempotencyKey)) {
             log.warn("Duplicate refund detected with idempotency key: {}", idempotencyKey);
-            // Return existing wallet state
             return getWalletBalance(userId);
         }
 
         // Get wallet
         Wallet wallet = getWalletBalance(userId);
 
-        // Add balance
+        // Add balance back
         wallet.setBalance(wallet.getBalance().add(amount));
         Wallet updatedWallet = walletRepository.save(wallet);
 
-        // Record transaction
+        // Record transaction with referenceId (bookingId)
         WalletTransaction transaction = WalletTransaction.builder()
                 .walletId(wallet.getId())
                 .transactionType(WalletTransaction.TransactionType.CREDIT)
                 .amount(amount)
+                .referenceId(bookingId)
+                .description("Refund for booking: " + bookingId)
                 .status(WalletTransaction.TransactionStatus.SUCCESS)
                 .idempotencyKey(idempotencyKey)
                 .build();
 
-        walletTransactionRepository.save(transaction);
+        WalletTransaction savedTransaction = walletTransactionRepository.save(transaction);
         log.info("Balance refunded successfully for user: {}, new balance: {}", userId, updatedWallet.getBalance());
+
+        // Log compensation entry for audit/rollback
+        compensationService.logRefund(bookingId, userId, savedTransaction.getId(), amount);
 
         return updatedWallet;
     }
@@ -130,11 +139,12 @@ public class WalletServiceImpl implements WalletService {
         wallet.setBalance(wallet.getBalance().add(amount));
         Wallet updatedWallet = walletRepository.save(wallet);
 
-        // Record transaction
+        // Record transaction (no bookingId for manual top-up)
         WalletTransaction transaction = WalletTransaction.builder()
                 .walletId(wallet.getId())
                 .transactionType(WalletTransaction.TransactionType.CREDIT)
                 .amount(amount)
+                .description("Manual wallet top-up")
                 .status(WalletTransaction.TransactionStatus.SUCCESS)
                 .idempotencyKey("ADD_FUNDS_" + userId + "_" + System.currentTimeMillis())
                 .build();
@@ -165,19 +175,16 @@ public class WalletServiceImpl implements WalletService {
     public Wallet createWallet(Long userId) {
         log.info("Creating wallet for user: {}", userId);
 
-        // Verify user exists
         if (!userService.userExists(userId)) {
             log.warn("User not found: {}", userId);
             throw new UserNotFoundException("User not found: " + userId);
         }
 
-        // Check if wallet already exists
         if (walletRepository.existsByUserId(userId)) {
             log.warn("Wallet already exists for user: {}", userId);
             return walletRepository.findByUserId(userId).get();
         }
 
-        // Create new wallet with initial balance of 0
         Wallet wallet = Wallet.builder()
                 .userId(userId)
                 .balance(BigDecimal.ZERO)

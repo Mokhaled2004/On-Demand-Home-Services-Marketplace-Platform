@@ -30,7 +30,7 @@ public class CompensationServiceImpl implements CompensationService {
                 .bookingId(bookingId)
                 .userId(userId)
                 .transactionId(transactionId)
-                .action(CompensationLog.CompensationAction.DEDUCTED)
+                .action(CompensationLog.CompensationAction.DEDUCT)
                 .amount(amount)
                 .status(CompensationLog.CompensationStatus.COMPLETED)
                 .build();
@@ -49,7 +49,7 @@ public class CompensationServiceImpl implements CompensationService {
                 .bookingId(bookingId)
                 .userId(userId)
                 .transactionId(transactionId)
-                .action(CompensationLog.CompensationAction.REFUNDED)
+                .action(CompensationLog.CompensationAction.REFUND)
                 .amount(amount)
                 .status(CompensationLog.CompensationStatus.COMPLETED)
                 .build();
