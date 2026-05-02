@@ -4,14 +4,15 @@ import java.math.BigDecimal;
 
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
-
-import org.springframework.validation.annotation.Validated;
+import javax.validation.constraints.Positive;
 
 import lombok.Data;
 
-@Data @Validated
+@Data
 public class AddFundsRequest {
 
-    @NotNull private long userId;
-    @NotNull @DecimalMin("0.01") private BigDecimal amount;
+    // userId is NOT accepted from the body - it is taken from the JWT token in the controller
+    @NotNull(message = "Amount is required")
+    @Positive(message = "Amount must be greater than 0")
+    private BigDecimal amount;
 }

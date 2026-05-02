@@ -1,17 +1,17 @@
 package com.marketplace.user.dto.request;
 
-import lombok.Data;
-
 import java.math.BigDecimal;
 
-/**
- * Validate Balance Request DTO
- * Contains fields for validating wallet balance
- */
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
+
+import lombok.Data;
+
 @Data
 public class ValidateBalanceRequest {
 
-    private Long userId;
-
+    // userId is NOT accepted from the body - it is taken from the JWT token in the controller
+    @NotNull(message = "Amount is required")
+    @Positive(message = "Amount must be greater than 0")
     private BigDecimal amount;
 }
