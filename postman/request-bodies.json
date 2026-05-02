@@ -1,0 +1,392 @@
+{
+    "request_bodies": {
+        "user_management": {
+            "register_user": {
+                "description": "Register a new user account",
+                "endpoint": "POST /users/register",
+                "body": {
+                    "username": "john_doe",
+                    "email": "john@example.com",
+                    "password": "SecurePassword123!",
+                    "role": "CUSTOMER",
+                    "professionType": "Software Engineer"
+                },
+                "response_example": {
+                    "status": "SUCCESS",
+                    "message": "User registered successfully",
+                    "data": {
+                        "id": 1,
+                        "username": "john_doe",
+                        "email": "john@example.com",
+                        "role": "CUSTOMER",
+                        "professionType": "Software Engineer"
+                    },
+                    "timestamp": "2026-05-01T22:20:00"
+                }
+            },
+            "login_user": {
+                "description": "Login user and get JWT token",
+                "endpoint": "POST /users/login",
+                "body": {
+                    "username": "john_doe",
+                    "password": "SecurePassword123!"
+                },
+                "response_example": {
+                    "status": "SUCCESS",
+                    "message": "Login successful",
+                    "data": {
+                        "userId": 1,
+                        "username": "john_doe",
+                        "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqb2huX2RvZSIsInVzZXJJZCI6MSwiaWF0IjoxNzE0NTk2NDAwLCJleHAiOjE3MTQ2ODI4MDB9.signature",
+                        "role": "CUSTOMER"
+                    },
+                    "timestamp": "2026-05-01T22:20:00"
+                }
+            },
+            "get_user": {
+                "description": "Get user details by ID",
+                "endpoint": "GET /users/{userId}",
+                "headers": {
+                    "Authorization": "Bearer {{jwt_token}}"
+                },
+                "path_params": {
+                    "userId": 1
+                },
+                "response_example": {
+                    "status": "SUCCESS",
+                    "data": {
+                        "id": 1,
+                        "username": "john_doe",
+                        "email": "john@example.com",
+                        "role": "CUSTOMER",
+                        "professionType": "Software Engineer"
+                    },
+                    "timestamp": "2026-05-01T22:20:00"
+                }
+            },
+            "update_user": {
+                "description": "Update user profile information",
+                "endpoint": "PUT /users/{userId}",
+                "headers": {
+                    "Authorization": "Bearer {{jwt_token}}"
+                },
+                "path_params": {
+                    "userId": 1
+                },
+                "body": {
+                    "email": "john.updated@example.com",
+                    "professionType": "Senior Software Engineer"
+                },
+                "response_example": {
+                    "status": "SUCCESS",
+                    "message": "User updated successfully",
+                    "data": {
+                        "id": 1,
+                        "username": "john_doe",
+                        "email": "john.updated@example.com",
+                        "role": "CUSTOMER",
+                        "professionType": "Senior Software Engineer"
+                    },
+                    "timestamp": "2026-05-01T22:20:00"
+                }
+            },
+            "delete_user": {
+                "description": "Delete user account",
+                "endpoint": "DELETE /users/{userId}",
+                "headers": {
+                    "Authorization": "Bearer {{jwt_token}}"
+                },
+                "path_params": {
+                    "userId": 1
+                },
+                "response_example": {
+                    "status_code": 204,
+                    "body": ""
+                }
+            }
+        },
+        "wallet_management": {
+            "get_wallet_balance": {
+                "description": "Get current wallet balance for user",
+                "endpoint": "GET /wallet/{userId}",
+                "headers": {
+                    "Authorization": "Bearer {{jwt_token}}"
+                },
+                "path_params": {
+                    "userId": 1
+                },
+                "response_example": {
+                    "status": "SUCCESS",
+                    "data": {
+                        "userId": 1,
+                        "balance": 100.00,
+                        "currency": "USD"
+                    },
+                    "timestamp": "2026-05-01T22:20:00"
+                }
+            },
+            "add_funds": {
+                "description": "Add funds to user wallet",
+                "endpoint": "POST /wallet/add-funds",
+                "headers": {
+                    "Authorization": "Bearer {{jwt_token}}"
+                },
+                "body": {
+                    "userId": 1,
+                    "amount": 100.00
+                },
+                "response_example": {
+                    "status": "SUCCESS",
+                    "message": "Funds added successfully",
+                    "data": {
+                        "userId": 1,
+                        "balance": 100.00,
+                        "currency": "USD"
+                    },
+                    "timestamp": "2026-05-01T22:20:00"
+                }
+            },
+            "deduct_balance": {
+                "description": "Deduct amount from wallet for booking payment",
+                "endpoint": "POST /wallet/deduct",
+                "headers": {
+                    "Authorization": "Bearer {{jwt_token}}"
+                },
+                "body": {
+                    "userId": 1,
+                    "amount": 25.50,
+                    "bookingId": "BOOKING-12345"
+                },
+                "notes": "Idempotency key is auto-generated. Duplicate requests with same parameters are prevented.",
+                "response_example": {
+                    "status": "SUCCESS",
+                    "message": "Balance deducted successfully",
+                    "data": {
+                        "userId": 1,
+                        "balance": 74.50,
+                        "currency": "USD"
+                    },
+                    "timestamp": "2026-05-01T22:20:00"
+                }
+            },
+            "refund_balance": {
+                "description": "Refund amount to wallet for booking cancellation",
+                "endpoint": "POST /wallet/refund",
+                "headers": {
+                    "Authorization": "Bearer {{jwt_token}}"
+                },
+                "body": {
+                    "userId": 1,
+                    "amount": 25.50,
+                    "bookingId": "BOOKING-12345",
+                    "idempotencyKey": "REFUND-UUID-12345"
+                },
+                "notes": "Idempotency key must be provided to prevent duplicate refunds.",
+                "response_example": {
+                    "status": "SUCCESS",
+                    "message": "Balance refunded successfully",
+                    "data": {
+                        "userId": 1,
+                        "balance": 100.00,
+                        "currency": "USD"
+                    },
+                    "timestamp": "2026-05-01T22:20:00"
+                }
+            },
+            "validate_balance": {
+                "description": "Check if user has sufficient balance",
+                "endpoint": "POST /wallet/validate",
+                "headers": {
+                    "Authorization": "Bearer {{jwt_token}}"
+                },
+                "body": {
+                    "userId": 1,
+                    "amount": 50.00
+                },
+                "response_example": {
+                    "status": "SUCCESS",
+                    "data": true,
+                    "timestamp": "2026-05-01T22:20:00"
+                }
+            }
+        }
+    },
+    "error_responses": {
+        "unauthorized": {
+            "status_code": 401,
+            "body": {
+                "status": "ERROR",
+                "message": "Unauthorized - Invalid or expired JWT token",
+                "data": null,
+                "timestamp": "2026-05-01T22:20:00"
+            }
+        },
+        "not_found": {
+            "status_code": 404,
+            "body": {
+                "status": "ERROR",
+                "message": "User not found: 999",
+                "data": null,
+                "timestamp": "2026-05-01T22:20:00"
+            }
+        },
+        "conflict": {
+            "status_code": 409,
+            "body": {
+                "status": "ERROR",
+                "message": "Username already exists: john_doe",
+                "data": null,
+                "timestamp": "2026-05-01T22:20:00"
+            }
+        },
+        "bad_request": {
+            "status_code": 400,
+            "body": {
+                "status": "ERROR",
+                "message": "Insufficient balance. Required: 150.00, Available: 100.00",
+                "data": null,
+                "timestamp": "2026-05-01T22:20:00"
+            }
+        },
+        "validation_error": {
+            "status_code": 400,
+            "body": {
+                "status": "ERROR",
+                "message": "amount: Amount must be greater than 0, userId: User ID is required",
+                "data": null,
+                "timestamp": "2026-05-01T22:20:00"
+            }
+        }
+    },
+    "test_scenarios": {
+        "scenario_1_complete_user_flow": {
+            "description": "Complete user registration, login, and profile management",
+            "steps": [
+                {
+                    "step": 1,
+                    "name": "Register User",
+                    "method": "POST",
+                    "endpoint": "/users/register",
+                    "body": {
+                        "username": "test_user_001",
+                        "email": "test001@example.com",
+                        "password": "TestPassword123!",
+                        "role": "CUSTOMER",
+                        "professionType": "Developer"
+                    }
+                },
+                {
+                    "step": 2,
+                    "name": "Login User",
+                    "method": "POST",
+                    "endpoint": "/users/login",
+                    "body": {
+                        "username": "test_user_001",
+                        "password": "TestPassword123!"
+                    },
+                    "note": "Save the JWT token from response"
+                },
+                {
+                    "step": 3,
+                    "name": "Get User Details",
+                    "method": "GET",
+                    "endpoint": "/users/{userId}",
+                    "headers": {
+                        "Authorization": "Bearer {{jwt_token}}"
+                    }
+                },
+                {
+                    "step": 4,
+                    "name": "Update User Profile",
+                    "method": "PUT",
+                    "endpoint": "/users/{userId}",
+                    "headers": {
+                        "Authorization": "Bearer {{jwt_token}}"
+                    },
+                    "body": {
+                        "email": "test001.updated@example.com",
+                        "professionType": "Senior Developer"
+                    }
+                }
+            ]
+        },
+        "scenario_2_wallet_operations": {
+            "description": "Complete wallet operations: add funds, deduct, validate, refund",
+            "steps": [
+                {
+                    "step": 1,
+                    "name": "Add Funds to Wallet",
+                    "method": "POST",
+                    "endpoint": "/wallet/add-funds",
+                    "headers": {
+                        "Authorization": "Bearer {{jwt_token}}"
+                    },
+                    "body": {
+                        "userId": 1,
+                        "amount": 500.00
+                    }
+                },
+                {
+                    "step": 2,
+                    "name": "Check Wallet Balance",
+                    "method": "GET",
+                    "endpoint": "/wallet/{userId}",
+                    "headers": {
+                        "Authorization": "Bearer {{jwt_token}}"
+                    }
+                },
+                {
+                    "step": 3,
+                    "name": "Validate Sufficient Balance",
+                    "method": "POST",
+                    "endpoint": "/wallet/validate",
+                    "headers": {
+                        "Authorization": "Bearer {{jwt_token}}"
+                    },
+                    "body": {
+                        "userId": 1,
+                        "amount": 100.00
+                    }
+                },
+                {
+                    "step": 4,
+                    "name": "Deduct Balance for Booking",
+                    "method": "POST",
+                    "endpoint": "/wallet/deduct",
+                    "headers": {
+                        "Authorization": "Bearer {{jwt_token}}"
+                    },
+                    "body": {
+                        "userId": 1,
+                        "amount": 100.00,
+                        "bookingId": "BOOKING-001"
+                    }
+                },
+                {
+                    "step": 5,
+                    "name": "Check Updated Balance",
+                    "method": "GET",
+                    "endpoint": "/wallet/{userId}",
+                    "headers": {
+                        "Authorization": "Bearer {{jwt_token}}"
+                    }
+                },
+                {
+                    "step": 6,
+                    "name": "Refund Balance",
+                    "method": "POST",
+                    "endpoint": "/wallet/refund",
+                    "headers": {
+                        "Authorization": "Bearer {{jwt_token}}"
+                    },
+                    "body": {
+                        "userId": 1,
+                        "amount": 100.00,
+                        "bookingId": "BOOKING-001",
+                        "idempotencyKey": "REFUND-001-UUID"
+                    }
+                }
+            ]
+        }
+    }
+}

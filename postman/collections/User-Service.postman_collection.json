@@ -1,0 +1,483 @@
+{
+    "info": {
+        "_postman_id": "user-service-collection",
+        "name": "User Service API",
+        "description": "Complete API collection for User Service microservice",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "User Management",
+            "item": [
+                {
+                    "name": "Register User",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"username\": \"john_doe\",\n  \"email\": \"john@example.com\",\n  \"password\": \"SecurePassword123!\",\n  \"role\": \"CUSTOMER\",\n  \"professionType\": \"Software Engineer\",\n  \"initialBalance\": 100.00\n}"
+                        },
+                        "url": {
+                            "raw": "http://localhost:8081/users/register",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8081",
+                            "path": [
+                                "users",
+                                "register"
+                            ]
+                        },
+                        "description": "Register a new user. role can be: CUSTOMER, SERVICE_PROVIDER, ADMIN"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Login User",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"username\": \"john_doe\",\n  \"password\": \"SecurePassword123!\"\n}"
+                        },
+                        "url": {
+                            "raw": "http://localhost:8081/users/login",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8081",
+                            "path": [
+                                "users",
+                                "login"
+                            ]
+                        },
+                        "description": "Login and get JWT token. Copy the token for use in other requests."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get User by ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{jwt_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "http://localhost:8081/users/1",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8081",
+                            "path": [
+                                "users",
+                                "1"
+                            ]
+                        },
+                        "description": "Get user details by user ID"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update User",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{jwt_token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"john.updated@example.com\",\n  \"professionType\": \"Senior Software Engineer\"\n}"
+                        },
+                        "url": {
+                            "raw": "http://localhost:8081/users/1",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8081",
+                            "path": [
+                                "users",
+                                "1"
+                            ]
+                        },
+                        "description": "Update user profile information"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Delete User",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{jwt_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "http://localhost:8081/users/1",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8081",
+                            "path": [
+                                "users",
+                                "1"
+                            ]
+                        },
+                        "description": "Delete user account"
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Wallet Management",
+            "description": "All wallet endpoints use the authenticated user's ID from the JWT token. No userId needed in request body.",
+            "item": [
+                {
+                    "name": "Get My Wallet Balance",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{jwt_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "http://localhost:8081/wallet/me",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8081",
+                            "path": [
+                                "wallet",
+                                "me"
+                            ]
+                        },
+                        "description": "Get wallet balance of the currently logged-in user. userId taken from JWT."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Add Funds",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{jwt_token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"amount\": 100.00\n}"
+                        },
+                        "url": {
+                            "raw": "http://localhost:8081/wallet/add-funds",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8081",
+                            "path": [
+                                "wallet",
+                                "add-funds"
+                            ]
+                        },
+                        "description": "Add funds to the logged-in user's own wallet. userId taken from JWT - cannot add to another user's wallet."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Deduct Balance",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{jwt_token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"amount\": 25.50,\n  \"bookingId\": \"BOOKING-12345\"\n}"
+                        },
+                        "url": {
+                            "raw": "http://localhost:8081/wallet/deduct",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8081",
+                            "path": [
+                                "wallet",
+                                "deduct"
+                            ]
+                        },
+                        "description": "Deduct amount from the logged-in user's wallet for a booking. userId taken from JWT."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Refund Balance",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{jwt_token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"amount\": 25.50,\n  \"bookingId\": \"BOOKING-12345\",\n  \"idempotencyKey\": \"REFUND-UUID-12345\"\n}"
+                        },
+                        "url": {
+                            "raw": "http://localhost:8081/wallet/refund",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8081",
+                            "path": [
+                                "wallet",
+                                "refund"
+                            ]
+                        },
+                        "description": "Refund amount to the logged-in user's wallet. userId taken from JWT."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Validate Balance",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{jwt_token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"amount\": 50.00\n}"
+                        },
+                        "url": {
+                            "raw": "http://localhost:8081/wallet/validate",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8081",
+                            "path": [
+                                "wallet",
+                                "validate"
+                            ]
+                        },
+                        "description": "Check if the logged-in user has sufficient balance. Returns true/false. userId taken from JWT."
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Admin Management",
+            "description": "Admin-only endpoints. Register a user with role=ADMIN, login, then use that JWT token here.",
+            "item": [
+                {
+                    "name": "Get All Users",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{admin_jwt_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "http://localhost:8081/admin/users",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8081",
+                            "path": [
+                                "admin",
+                                "users"
+                            ]
+                        },
+                        "description": "View all registered users in the system. ADMIN ONLY."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get All Transactions",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{admin_jwt_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "http://localhost:8081/admin/transactions",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8081",
+                            "path": [
+                                "admin",
+                                "transactions"
+                            ]
+                        },
+                        "description": "View all wallet transactions (DEBIT/CREDIT) across all users. ADMIN ONLY."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get All Compensation Logs",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{admin_jwt_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "http://localhost:8081/admin/compensation-log",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8081",
+                            "path": [
+                                "admin",
+                                "compensation-log"
+                            ]
+                        },
+                        "description": "View all booking-related deductions and refunds. ADMIN ONLY."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get User Transactions",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{admin_jwt_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "http://localhost:8081/admin/users/1/transactions",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8081",
+                            "path": [
+                                "admin",
+                                "users",
+                                "1",
+                                "transactions"
+                            ]
+                        },
+                        "description": "View all wallet transactions for a specific user. Replace 1 with actual userId. ADMIN ONLY."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get User Compensation Log",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{admin_jwt_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "http://localhost:8081/admin/users/1/compensation-log",
+                            "protocol": "http",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8081",
+                            "path": [
+                                "admin",
+                                "users",
+                                "1",
+                                "compensation-log"
+                            ]
+                        },
+                        "description": "View all compensation log entries for a specific user. Replace 1 with actual userId. ADMIN ONLY."
+                    },
+                    "response": []
+                }
+            ]
+        }
+    ],
+    "variable": [
+        {
+            "key": "jwt_token",
+            "value": "",
+            "type": "string",
+            "description": "JWT token from regular user login"
+        },
+        {
+            "key": "admin_jwt_token",
+            "value": "",
+            "type": "string",
+            "description": "JWT token from ADMIN user login"
+        }
+    ]
+}
