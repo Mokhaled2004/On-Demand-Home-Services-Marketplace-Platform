@@ -16,8 +16,9 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * JWT Authentication Filter
+ * JWT Authentication Filter for Service Catalog
  * Validates JWT tokens on incoming requests and sets authentication context with role.
+ * Uses same secret key as User Service for token validation.
  */
 @Component
 @RequiredArgsConstructor
@@ -47,7 +48,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(authority));
 
                 UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(username, null, authorities);
+                        new UsernamePasswordAuthenticationToken(userId.toString(), null, authorities);
                 authentication.setDetails(userId);
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
