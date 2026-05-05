@@ -78,6 +78,11 @@ public class ServiceOfferServiceImpl implements ServiceOfferService {
     public List<ServiceOffer> getOffersByCategory(Long categoryId) {
         log.info("Getting active offers for categoryId={}", categoryId);
 
+        // Validate category exists first - throws 404 if not found
+        if (!serviceCategoryRepository.existsById(categoryId)) {
+            throw new CategoryNotFoundException(categoryId);
+        }
+
         return serviceOfferRepository
                 .findByCategoryIdAndStatusAndAvailableFromGreaterThanEqual(
                         categoryId,
@@ -118,13 +123,21 @@ public class ServiceOfferServiceImpl implements ServiceOfferService {
 
         validateOfferData(price, availableFrom, availableTo);
 
+        // Validate status value before applying
+        ServiceOffer.Status offerStatus;
+        try {
+            offerStatus = ServiceOffer.Status.valueOf(status.toUpperCase());
+        } catch (IllegalArgumentException | NullPointerException e) {
+            throw new InvalidOfferDataException("Invalid status value. Accepted values: ACTIVE, INACTIVE");
+        }
+
         ServiceOffer offer = getOfferById(offerId);
         offer.setTitle(title);
         offer.setDescription(description);
         offer.setPrice(price);
         offer.setAvailableFrom(availableFrom);
         offer.setAvailableTo(availableTo);
-        offer.setStatus(ServiceOffer.Status.valueOf(status.toUpperCase()));
+        offer.setStatus(offerStatus);
 
         return serviceOfferRepository.save(offer);
     }
@@ -147,18 +160,38 @@ public class ServiceOfferServiceImpl implements ServiceOfferService {
     }
 
     @Override
+    public ServiceOffer toggleOfferStatus(Long offerId) {
+        log.info("Toggling status for offer id={}", offerId);
+
+        ServiceOffer offer = getOfferById(offerId);
+        if (offer.getStatus() == ServiceOffer.Status.ACTIVE) {
+            offer.setStatus(ServiceOffer.Status.INACTIVE);
+        } else {
+            offer.setStatus(ServiceOffer.Status.ACTIVE);
+        }
+        return serviceOfferRepository.save(offer);
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public AvailabilityResponse getAvailability(Long offerId) {
         log.info("Getting availability for offer id={}", offerId);
 
         ServiceOffer offer = getOfferById(offerId);
+        LocalDateTime now = LocalDateTime.now();
 
-        return new AvailabilityResponse(
-                offer.getId(),
-                offer.getAvailableFrom(),
-                offer.getAvailableTo(),
-                offer.getStatus() == ServiceOffer.Status.ACTIVE
-                        && !offer.getAvailableFrom().isBefore(LocalDateTime.now()));
+        // isAvailable = offer is ACTIVE AND current time is within the availability window
+        boolean isAvailable = offer.getStatus() == ServiceOffer.Status.ACTIVE
+                && !now.isBefore(offer.getAvailableFrom())   // now >= availableFrom
+                && !now.isAfter(offer.getAvailableTo());     // now <= availableTo
+
+        AvailabilityResponse response = new AvailabilityResponse();
+        response.setAvailableFrom(offer.getAvailableFrom());
+        response.setAvailableTo(offer.getAvailableTo());
+        response.setStatus(offer.getStatus().toString());
+        response.setIsAvailable(isAvailable);
+
+        return response;
     }
 
     private void validateOfferData(BigDecimal price, LocalDateTime availableFrom, LocalDateTime availableTo) {

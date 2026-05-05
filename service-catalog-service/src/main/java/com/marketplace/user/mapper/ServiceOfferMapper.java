@@ -25,13 +25,13 @@ public class ServiceOfferMapper {
         ServiceOfferResponse response = new ServiceOfferResponse();
         response.setId(offer.getId());
         response.setProviderId(offer.getProviderId());
-        response.setCategoryId(offer.getCategoryId());
+        response.setCategoryId(offer.getCategory() != null ? offer.getCategory().getId() : null);
         response.setTitle(offer.getTitle());
         response.setDescription(offer.getDescription());
         response.setPrice(offer.getPrice());
         response.setAvailableFrom(offer.getAvailableFrom());
         response.setAvailableTo(offer.getAvailableTo());
-        response.setStatus(offer.getStatus());
+        response.setStatus(offer.getStatus().toString());
         response.setCreatedAt(offer.getCreatedAt());
         response.setUpdatedAt(offer.getUpdatedAt());
 
@@ -49,7 +49,7 @@ public class ServiceOfferMapper {
         }
 
         ServiceOffer offer = new ServiceOffer();
-        offer.setCategoryId(request.getCategoryId());
+        // Note: category will be set by the service layer
         offer.setTitle(request.getTitle());
         offer.setDescription(request.getDescription());
         offer.setPrice(request.getPrice());

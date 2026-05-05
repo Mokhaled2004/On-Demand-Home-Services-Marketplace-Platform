@@ -2,7 +2,7 @@ spring:
   application:
     name: service-catalog-service
   datasource:
-    url: jdbc:postgresql://ep-late-mountain-ami1fmbj-pooler.c-5.us-east-1.aws.neon.tech/catalog_service_db?sslmode=require&channel_binding=require
+    url: jdbc:postgresql://ep-late-mountain-ami1fmbj-pooler.c-5.us-east-1.aws.neon.tech/catalog_service_db?sslmode=require&channel_binding=require&stringtype=unspecified
     username: neondb_owner
     password: npg_kJEMe1DKpw8i
     driver-class-name: org.postgresql.Driver

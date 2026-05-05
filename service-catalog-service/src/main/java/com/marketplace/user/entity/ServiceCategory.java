@@ -33,9 +33,6 @@ public class ServiceCategory {
 
     private String description;
 
-    @Column(nullable = false)
-    private boolean deleted = false;
-
     @CreatedDate
     private LocalDateTime createdAt;
 

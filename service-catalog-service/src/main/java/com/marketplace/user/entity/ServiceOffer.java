@@ -55,6 +55,7 @@ public class ServiceOffer {
     private LocalDateTime availableTo;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "status")
     private Status status;
 
     @CreatedDate

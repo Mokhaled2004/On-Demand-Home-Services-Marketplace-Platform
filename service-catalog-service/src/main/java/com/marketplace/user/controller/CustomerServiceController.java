@@ -124,7 +124,7 @@ public class CustomerServiceController {
         ServiceOffer offer = serviceOfferService.getOfferById(offerId);
 
         // Verify offer is active
-        if (!"ACTIVE".equals(offer.getStatus())) {
+        if (offer.getStatus() != ServiceOffer.Status.ACTIVE) {
             throw new com.marketplace.user.exception.OfferNotFoundException(offerId);
         }
 
@@ -151,13 +151,13 @@ public class CustomerServiceController {
         AvailabilityResponse availability = new AvailabilityResponse();
         availability.setAvailableFrom(offer.getAvailableFrom());
         availability.setAvailableTo(offer.getAvailableTo());
-        availability.setStatus(offer.getStatus());
+        availability.setStatus(offer.getStatus().toString());
 
-        // Check if currently available
+        // isAvailable = offer is ACTIVE AND current time is within the availability window
         LocalDateTime now = LocalDateTime.now();
-        boolean isAvailable = "ACTIVE".equals(offer.getStatus())
-                && !now.isBefore(offer.getAvailableFrom())
-                && !now.isAfter(offer.getAvailableTo());
+        boolean isAvailable = offer.getStatus() == ServiceOffer.Status.ACTIVE
+                && !now.isBefore(offer.getAvailableFrom())   // now >= availableFrom
+                && !now.isAfter(offer.getAvailableTo());     // now <= availableTo
         availability.setIsAvailable(isAvailable);
 
         return ResponseEntity.ok(

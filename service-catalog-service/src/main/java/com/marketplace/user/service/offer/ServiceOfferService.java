@@ -40,5 +40,7 @@ public interface ServiceOfferService {
 
     void hardDeleteOffer(Long offerId);
 
+    ServiceOffer toggleOfferStatus(Long offerId);
+
     AvailabilityResponse getAvailability(Long offerId);
 }

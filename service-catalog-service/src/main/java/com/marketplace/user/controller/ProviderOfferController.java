@@ -175,6 +175,39 @@ public class ProviderOfferController {
     }
 
     /**
+     * PATCH /provider/offers/{offerId}/toggle-status
+     * Toggle offer status between ACTIVE and INACTIVE
+     * Provider can only toggle their own offers
+     *
+     * @param offerId the offer ID
+     * @param authentication Spring Security authentication (contains JWT)
+     * @return 200 OK with updated ServiceOfferResponse
+     */
+    @PatchMapping("/{offerId}/toggle-status")
+    public ResponseEntity<ApiResponse<ServiceOfferResponse>> toggleOfferStatus(
+            @PathVariable Long offerId,
+            Authentication authentication) {
+        Long providerId = getAuthenticatedProviderId(authentication);
+        log.info("Provider {} toggling status for offer: {}", providerId, offerId);
+
+        ServiceOffer offer = serviceOfferService.getOfferById(offerId);
+
+        // Verify ownership
+        if (!offer.getProviderId().equals(providerId)) {
+            throw new UnauthorizedOfferAccessException(providerId, offerId);
+        }
+
+        ServiceOffer updated = serviceOfferService.toggleOfferStatus(offerId);
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        "Offer status toggled to " + updated.getStatus(),
+                        serviceOfferMapper.toDTO(updated)
+                )
+        );
+    }
+
+    /**
      * DELETE /provider/offers/{offerId}
      * Delete (soft delete) an offer
      * Provider can only delete their own offers
