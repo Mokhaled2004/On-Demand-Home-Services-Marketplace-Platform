@@ -70,6 +70,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(authz -> authz
                 .requestMatchers("/services").permitAll()
                 .requestMatchers("/services/**").permitAll()
+                .requestMatchers("/internal/**").permitAll()  // internal service-to-service calls
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/provider/**").hasRole("SERVICE_PROVIDER")
                 .anyRequest().authenticated()

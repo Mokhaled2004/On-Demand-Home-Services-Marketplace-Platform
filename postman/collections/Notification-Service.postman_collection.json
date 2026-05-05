@@ -1,0 +1,98 @@
+{
+    "info": {
+        "_postman_id": "notification-service-collection",
+        "name": "Notification Service",
+        "description": "Notification Service API - Spring Boot RabbitMQ Consumer\nBase URL: http://localhost:8084\n\nNotifications are created automatically when RabbitMQ events are received from Booking Service.\nNo auth required on these endpoints.",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Get All Notifications (User)",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "{{notification_service_url}}/notifications/user/1",
+                    "host": [
+                        "{{notification_service_url}}"
+                    ],
+                    "path": [
+                        "notifications",
+                        "user",
+                        "1"
+                    ]
+                },
+                "description": "Get all notifications for a user (read + unread), newest first.\nReplace 1 with the actual userId.\n\nNotifications are created automatically when:\n- Booking is CONFIRMED → customer + provider notified\n- Booking FAILS → customer notified\n- Booking is CANCELLED → customer + provider notified\n\nStatus: 200 OK"
+            },
+            "response": []
+        },
+        {
+            "name": "Get Unread Notifications (User)",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "{{notification_service_url}}/notifications/user/1/unread",
+                    "host": [
+                        "{{notification_service_url}}"
+                    ],
+                    "path": [
+                        "notifications",
+                        "user",
+                        "1",
+                        "unread"
+                    ]
+                },
+                "description": "Get only unread notifications for a user.\nReplace 1 with the actual userId.\nAlso returns the unread count.\n\nStatus: 200 OK"
+            },
+            "response": []
+        },
+        {
+            "name": "Get Notifications by Booking",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "{{notification_service_url}}/notifications/booking/1",
+                    "host": [
+                        "{{notification_service_url}}"
+                    ],
+                    "path": [
+                        "notifications",
+                        "booking",
+                        "1"
+                    ]
+                },
+                "description": "Get all notifications related to a specific booking.\nReplace 1 with the actual bookingId.\nUseful for seeing all parties notified for a booking.\n\nStatus: 200 OK"
+            },
+            "response": []
+        },
+        {
+            "name": "Mark Notification as Read",
+            "request": {
+                "method": "PUT",
+                "header": [],
+                "url": {
+                    "raw": "{{notification_service_url}}/notifications/1/read",
+                    "host": [
+                        "{{notification_service_url}}"
+                    ],
+                    "path": [
+                        "notifications",
+                        "1",
+                        "read"
+                    ]
+                },
+                "description": "Mark a specific notification as read.\nReplace 1 with the actual notificationId.\nSets read_status = true and records read_at timestamp.\n\nStatus: 200 OK\nError: 404 Not Found"
+            },
+            "response": []
+        }
+    ],
+    "variable": [
+        {
+            "key": "notification_service_url",
+            "value": "http://localhost:8084",
+            "type": "string"
+        }
+    ]
+}

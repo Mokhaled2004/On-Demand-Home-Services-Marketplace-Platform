@@ -1,0 +1,1114 @@
+{
+    "info": {
+        "_postman_id": "marketplace-api-collection",
+        "name": "Marketplace API",
+        "description": "Complete API collection for On-Demand Home Services Marketplace with 31 endpoints across 2 microservices",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "User Service",
+            "item": [
+                {
+                    "name": "User Management",
+                    "item": [
+                        {
+                            "name": "Register User",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"username\": \"john_doe\",\n  \"email\": \"john@example.com\",\n  \"password\": \"SecurePassword123!\",\n  \"role\": \"CUSTOMER\",\n  \"professionType\": \"Software Engineer\",\n  \"initialBalance\": 100.00\n}"
+                                },
+                                "url": {
+                                    "raw": "{{user_service_url}}/users/register",
+                                    "host": [
+                                        "{{user_service_url}}"
+                                    ],
+                                    "path": [
+                                        "users",
+                                        "register"
+                                    ]
+                                },
+                                "description": "Register a new user. role can be: CUSTOMER, SERVICE_PROVIDER, ADMIN"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Login User",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"username\": \"john_doe\",\n  \"password\": \"SecurePassword123!\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{user_service_url}}/users/login",
+                                    "host": [
+                                        "{{user_service_url}}"
+                                    ],
+                                    "path": [
+                                        "users",
+                                        "login"
+                                    ]
+                                },
+                                "description": "Login and get JWT token. Copy the token for use in other requests."
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Get User by ID",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{jwt_token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{user_service_url}}/users/1",
+                                    "host": [
+                                        "{{user_service_url}}"
+                                    ],
+                                    "path": [
+                                        "users",
+                                        "1"
+                                    ]
+                                },
+                                "description": "Get user details by user ID"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Update User",
+                            "request": {
+                                "method": "PUT",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{jwt_token}}"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"email\": \"john.updated@example.com\",\n  \"professionType\": \"Senior Software Engineer\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{user_service_url}}/users/1",
+                                    "host": [
+                                        "{{user_service_url}}"
+                                    ],
+                                    "path": [
+                                        "users",
+                                        "1"
+                                    ]
+                                },
+                                "description": "Update user profile information"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Delete User",
+                            "request": {
+                                "method": "DELETE",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{jwt_token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{user_service_url}}/users/1",
+                                    "host": [
+                                        "{{user_service_url}}"
+                                    ],
+                                    "path": [
+                                        "users",
+                                        "1"
+                                    ]
+                                },
+                                "description": "Delete user account"
+                            },
+                            "response": []
+                        }
+                    ]
+                },
+                {
+                    "name": "Wallet Management",
+                    "description": "All wallet endpoints use the authenticated user's ID from the JWT token. No userId needed in request body.",
+                    "item": [
+                        {
+                            "name": "Get My Wallet Balance",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{jwt_token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{user_service_url}}/wallet/me",
+                                    "host": [
+                                        "{{user_service_url}}"
+                                    ],
+                                    "path": [
+                                        "wallet",
+                                        "me"
+                                    ]
+                                },
+                                "description": "Get wallet balance of the currently logged-in user. userId taken from JWT."
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Add Funds",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{jwt_token}}"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"amount\": 100.00\n}"
+                                },
+                                "url": {
+                                    "raw": "{{user_service_url}}/wallet/add-funds",
+                                    "host": [
+                                        "{{user_service_url}}"
+                                    ],
+                                    "path": [
+                                        "wallet",
+                                        "add-funds"
+                                    ]
+                                },
+                                "description": "Add funds to the logged-in user's own wallet. userId taken from JWT - cannot add to another user's wallet."
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Deduct Balance",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{jwt_token}}"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"amount\": 25.50,\n  \"bookingId\": \"BOOKING-12345\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{user_service_url}}/wallet/deduct",
+                                    "host": [
+                                        "{{user_service_url}}"
+                                    ],
+                                    "path": [
+                                        "wallet",
+                                        "deduct"
+                                    ]
+                                },
+                                "description": "Deduct amount from the logged-in user's wallet for a booking. userId taken from JWT."
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Refund Balance",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{jwt_token}}"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"amount\": 25.50,\n  \"bookingId\": \"BOOKING-12345\",\n  \"idempotencyKey\": \"REFUND-UUID-12345\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{user_service_url}}/wallet/refund",
+                                    "host": [
+                                        "{{user_service_url}}"
+                                    ],
+                                    "path": [
+                                        "wallet",
+                                        "refund"
+                                    ]
+                                },
+                                "description": "Refund amount to the logged-in user's wallet. userId taken from JWT."
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Validate Balance",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{jwt_token}}"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"amount\": 50.00\n}"
+                                },
+                                "url": {
+                                    "raw": "{{user_service_url}}/wallet/validate",
+                                    "host": [
+                                        "{{user_service_url}}"
+                                    ],
+                                    "path": [
+                                        "wallet",
+                                        "validate"
+                                    ]
+                                },
+                                "description": "Check if the logged-in user has sufficient balance. Returns true/false. userId taken from JWT."
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Get Wallet by User ID",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{admin_jwt_token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{user_service_url}}/wallet/user/1",
+                                    "host": [
+                                        "{{user_service_url}}"
+                                    ],
+                                    "path": [
+                                        "wallet",
+                                        "user",
+                                        "1"
+                                    ]
+                                },
+                                "description": "Get wallet balance for a specific user by ID. ADMIN ONLY. Replace 1 with actual userId."
+                            },
+                            "response": []
+                        }
+                    ]
+                },
+                {
+                    "name": "Admin Management",
+                    "description": "Admin-only endpoints. Register a user with role=ADMIN, login, then use that JWT token here.",
+                    "item": [
+                        {
+                            "name": "Get All Users",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{admin_jwt_token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{user_service_url}}/admin/users",
+                                    "host": [
+                                        "{{user_service_url}}"
+                                    ],
+                                    "path": [
+                                        "admin",
+                                        "users"
+                                    ]
+                                },
+                                "description": "View all registered users in the system. ADMIN ONLY."
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Get All Transactions",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{admin_jwt_token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{user_service_url}}/admin/transactions",
+                                    "host": [
+                                        "{{user_service_url}}"
+                                    ],
+                                    "path": [
+                                        "admin",
+                                        "transactions"
+                                    ]
+                                },
+                                "description": "View all wallet transactions (DEBIT/CREDIT) across all users. ADMIN ONLY."
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Get All Compensation Logs",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{admin_jwt_token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{user_service_url}}/admin/compensation-log",
+                                    "host": [
+                                        "{{user_service_url}}"
+                                    ],
+                                    "path": [
+                                        "admin",
+                                        "compensation-log"
+                                    ]
+                                },
+                                "description": "View all booking-related deductions and refunds. ADMIN ONLY."
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Get User Transactions",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{admin_jwt_token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{user_service_url}}/admin/users/1/transactions",
+                                    "host": [
+                                        "{{user_service_url}}"
+                                    ],
+                                    "path": [
+                                        "admin",
+                                        "users",
+                                        "1",
+                                        "transactions"
+                                    ]
+                                },
+                                "description": "View all wallet transactions for a specific user. Replace 1 with actual userId. ADMIN ONLY."
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Get User Compensation Log",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{admin_jwt_token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{user_service_url}}/admin/users/1/compensation-log",
+                                    "host": [
+                                        "{{user_service_url}}"
+                                    ],
+                                    "path": [
+                                        "admin",
+                                        "users",
+                                        "1",
+                                        "compensation-log"
+                                    ]
+                                },
+                                "description": "View all compensation log entries for a specific user. Replace 1 with actual userId. ADMIN ONLY."
+                            },
+                            "response": []
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Service Catalog",
+            "item": [
+                {
+                    "name": "Admin - Categories",
+                    "item": [
+                        {
+                            "name": "Create Category",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{jwt_token}}"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"name\": \"Home Cleaning\",\n  \"description\": \"Professional home cleaning services including deep cleaning, regular maintenance, and specialized cleaning\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{catalog_service_url}}/admin/categories",
+                                    "host": [
+                                        "{{catalog_service_url}}"
+                                    ],
+                                    "path": [
+                                        "categories"
+                                    ]
+                                },
+                                "description": "Create a new service category (Admin only)\nRequired: ROLE_ADMIN\nStatus: 201 Created"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Get All Categories",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{jwt_token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{catalog_service_url}}/admin/categories",
+                                    "host": [
+                                        "{{catalog_service_url}}"
+                                    ],
+                                    "path": [
+                                        "categories"
+                                    ]
+                                },
+                                "description": "Retrieve all service categories\nRequired: ROLE_ADMIN\nStatus: 200 OK"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Get Category by ID",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{jwt_token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{catalog_service_url}}/admin/categories/1",
+                                    "host": [
+                                        "{{catalog_service_url}}"
+                                    ],
+                                    "path": [
+                                        "categories",
+                                        "1"
+                                    ]
+                                },
+                                "description": "Retrieve a specific category by ID\nRequired: ROLE_ADMIN\nStatus: 200 OK\nError: 404 Not Found"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Update Category",
+                            "request": {
+                                "method": "PUT",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{jwt_token}}"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"name\": \"Home Cleaning Services\",\n  \"description\": \"Professional home cleaning services including deep cleaning, regular maintenance, specialized cleaning, and post-construction cleanup\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{catalog_service_url}}/admin/categories/1",
+                                    "host": [
+                                        "{{catalog_service_url}}"
+                                    ],
+                                    "path": [
+                                        "categories",
+                                        "1"
+                                    ]
+                                },
+                                "description": "Update an existing category\nRequired: ROLE_ADMIN\nStatus: 200 OK\nError: 404 Not Found, 409 Conflict (duplicate name)"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Delete Category",
+                            "request": {
+                                "method": "DELETE",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{jwt_token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{catalog_service_url}}/admin/categories/1",
+                                    "host": [
+                                        "{{catalog_service_url}}"
+                                    ],
+                                    "path": [
+                                        "categories",
+                                        "1"
+                                    ]
+                                },
+                                "description": "Delete a category (soft delete)\nRequired: ROLE_ADMIN\nStatus: 204 No Content\nError: 404 Not Found"
+                            },
+                            "response": []
+                        }
+                    ]
+                },
+                {
+                    "name": "Provider - Offers",
+                    "item": [
+                        {
+                            "name": "Create Service Offer",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{jwt_token}}"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"categoryId\": 1,\n  \"title\": \"Premium Home Deep Cleaning\",\n  \"description\": \"Complete deep cleaning service including all rooms, carpets, and hard-to-reach areas. Includes eco-friendly products.\",\n  \"price\": 150.00,\n  \"availableFrom\": \"2026-05-10T09:00:00\",\n  \"availableTo\": \"2026-05-10T17:00:00\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{catalog_service_url}}/provider/offers",
+                                    "host": [
+                                        "{{catalog_service_url}}"
+                                    ],
+                                    "path": [
+                                        "offers"
+                                    ]
+                                },
+                                "description": "Create a new service offer (Provider only)\nRequired: ROLE_SERVICE_PROVIDER\nProvider ID extracted from JWT token\nStatus: 201 Created"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Get My Offers",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{jwt_token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{catalog_service_url}}/provider/offers",
+                                    "host": [
+                                        "{{catalog_service_url}}"
+                                    ],
+                                    "path": [
+                                        "offers",
+                                        "my-offers"
+                                    ]
+                                },
+                                "description": "Retrieve all offers created by the current provider\nRequired: ROLE_SERVICE_PROVIDER\nStatus: 200 OK"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Get Offer by ID",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{jwt_token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{catalog_service_url}}/provider/offers/1",
+                                    "host": [
+                                        "{{catalog_service_url}}"
+                                    ],
+                                    "path": [
+                                        "offers",
+                                        "1"
+                                    ]
+                                },
+                                "description": "Retrieve a specific offer by ID\nRequired: ROLE_SERVICE_PROVIDER\nStatus: 200 OK\nError: 404 Not Found"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Update Service Offer",
+                            "request": {
+                                "method": "PUT",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{jwt_token}}"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"title\": \"Premium Home Deep Cleaning - Updated\",\n  \"description\": \"Complete deep cleaning service including all rooms, carpets, and hard-to-reach areas. Includes eco-friendly products and post-cleaning inspection.\",\n  \"price\": 175.00,\n  \"availableFrom\": \"2026-05-10T09:00:00\",\n  \"availableTo\": \"2026-05-10T18:00:00\",\n  \"status\": \"ACTIVE\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{catalog_service_url}}/provider/offers/1",
+                                    "host": [
+                                        "{{catalog_service_url}}"
+                                    ],
+                                    "path": [
+                                        "offers",
+                                        "1"
+                                    ]
+                                },
+                                "description": "Update an existing service offer\nRequired: ROLE_SERVICE_PROVIDER\nProvider must own the offer\nStatus: 200 OK\nError: 404 Not Found, 403 Forbidden (not owner)"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Deactivate Service Offer",
+                            "request": {
+                                "method": "DELETE",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{jwt_token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{catalog_service_url}}/provider/offers/1",
+                                    "host": [
+                                        "{{catalog_service_url}}"
+                                    ],
+                                    "path": [
+                                        "offers",
+                                        "1"
+                                    ]
+                                },
+                                "description": "Deactivate a service offer (soft delete - sets status to INACTIVE)\nRequired: ROLE_SERVICE_PROVIDER\nProvider must own the offer\nStatus: 204 No Content\nError: 404 Not Found, 403 Forbidden (not owner)"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Toggle Offer Status",
+                            "request": {
+                                "method": "PATCH",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{jwt_token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{catalog_service_url}}/provider/offers/1/toggle-status",
+                                    "host": [
+                                        "{{catalog_service_url}}"
+                                    ],
+                                    "path": [
+                                        "provider",
+                                        "offers",
+                                        "1",
+                                        "toggle-status"
+                                    ]
+                                },
+                                "description": "Toggle offer status between ACTIVE and INACTIVE\nRequired: ROLE_SERVICE_PROVIDER\nProvider must own the offer\nStatus: 200 OK with updated offer\nError: 404 Not Found, 403 Forbidden (not owner)"
+                            },
+                            "response": []
+                        }
+                    ]
+                },
+                {
+                    "name": "Customer - Browse Services",
+                    "item": [
+                        {
+                            "name": "Get All Active Services",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{jwt_token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{catalog_service_url}}/services",
+                                    "host": [
+                                        "{{catalog_service_url}}"
+                                    ],
+                                    "path": [
+                                        "services"
+                                    ]
+                                },
+                                "description": "Browse all active services\nRequired: Authenticated user (any role)\nFilters: status = ACTIVE, availableFrom >= NOW()\nStatus: 200 OK"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Get Services by Category",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{jwt_token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{catalog_service_url}}/services/category/1",
+                                    "host": [
+                                        "{{catalog_service_url}}"
+                                    ],
+                                    "path": [
+                                        "services",
+                                        "category",
+                                        "1"
+                                    ]
+                                },
+                                "description": "Browse services by category\nRequired: Authenticated user (any role)\nFilters: category_id = categoryId, status = ACTIVE, availableFrom >= NOW()\nStatus: 200 OK\nError: 404 Not Found (category doesn't exist)"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Search Services",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{jwt_token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{catalog_service_url}}/services/search?keyword=cleaning&categoryId=1&minPrice=50&maxPrice=200",
+                                    "host": [
+                                        "{{catalog_service_url}}"
+                                    ],
+                                    "path": [
+                                        "services",
+                                        "search"
+                                    ],
+                                    "query": [
+                                        {
+                                            "key": "keyword",
+                                            "value": "cleaning",
+                                            "disabled": false
+                                        },
+                                        {
+                                            "key": "categoryId",
+                                            "value": "1",
+                                            "disabled": false
+                                        },
+                                        {
+                                            "key": "minPrice",
+                                            "value": "50",
+                                            "disabled": false
+                                        },
+                                        {
+                                            "key": "maxPrice",
+                                            "value": "200",
+                                            "disabled": false
+                                        }
+                                    ]
+                                },
+                                "description": "Search services by keyword and/or price range\nRequired: Authenticated user (any role)\nQuery Parameters (all optional):\n- keyword: Search in title and description\n- categoryId: Filter by category\n- minPrice: Minimum price filter\n- maxPrice: Maximum price filter\nFilters: status = ACTIVE, availableFrom >= NOW()\nStatus: 200 OK"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Get Service Details",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{jwt_token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{catalog_service_url}}/services/1",
+                                    "host": [
+                                        "{{catalog_service_url}}"
+                                    ],
+                                    "path": [
+                                        "services",
+                                        "1"
+                                    ]
+                                },
+                                "description": "Get detailed information about a specific service\nRequired: Authenticated user (any role)\nValidation: Offer must be ACTIVE\nStatus: 200 OK\nError: 404 Not Found (offer not found or inactive)"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Check Service Availability",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{jwt_token}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{catalog_service_url}}/services/1/availability",
+                                    "host": [
+                                        "{{catalog_service_url}}"
+                                    ],
+                                    "path": [
+                                        "services",
+                                        "1",
+                                        "availability"
+                                    ]
+                                },
+                                "description": "Check availability window and current availability status of a service\nRequired: Authenticated user (any role)\nReturns: availableFrom, availableTo, status, isAvailable\nStatus: 200 OK\nError: 404 Not Found"
+                            },
+                            "response": []
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    {
+        "name": "Booking",
+        "description": "Booking Service endpoints (Jakarta EE / EJB on WildFly port 8080).\nBase URL: http://localhost:8080/booking-service-1.0-SNAPSHOT/api\nAll endpoints require a JWT token in the Authorization header.\ncustomerId is extracted from the JWT — never sent in the body.",
+        "item": [
+            {
+                "name": "Create Booking",
+                "request": {
+                    "method": "POST",
+                    "header": [
+                        {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                        },
+                        {
+                            "key": "Authorization",
+                            "value": "Bearer {{jwt_token}}"
+                        }
+                    ],
+                    "body": {
+                        "mode": "raw",
+                        "raw": "{\n  \"serviceOfferId\": 1,\n  \"serviceStart\": \"2026-06-01T09:00:00\",\n  \"serviceEnd\": \"2026-06-01T17:00:00\",\n  \"idempotencyKey\": \"BOOKING-UNIQUE-KEY-001\"\n}"
+                    },
+                    "url": {
+                        "raw": "{{booking_service_url}}/bookings",
+                        "host": [
+                            "{{booking_service_url}}"
+                        ],
+                        "path": [
+                            "bookings"
+                        ]
+                    },
+                    "description": "Create a new booking.\ncustomerId is extracted from the JWT token automatically.\nFlow: Validates offer → checks wallet → deducts payment → saves booking → publishes RabbitMQ event.\nStatus: 201 Created (CONFIRMED) or 400 Bad Request (insufficient balance)\nidempotencyKey is optional — prevents duplicate bookings on retry."
+                },
+                "response": []
+            },
+            {
+                "name": "Get Booking by ID",
+                "request": {
+                    "method": "GET",
+                    "header": [
+                        {
+                            "key": "Authorization",
+                            "value": "Bearer {{jwt_token}}"
+                        }
+                    ],
+                    "url": {
+                        "raw": "{{booking_service_url}}/bookings/1",
+                        "host": [
+                            "{{booking_service_url}}"
+                        ],
+                        "path": [
+                            "bookings",
+                            "1"
+                        ]
+                    },
+                    "description": "Get a single booking by its ID.\nReplace 1 with the actual booking ID.\nStatus: 200 OK\nError: 404 Not Found"
+                },
+                "response": []
+            },
+            {
+                "name": "Get My Bookings (Customer)",
+                "request": {
+                    "method": "GET",
+                    "header": [
+                        {
+                            "key": "Authorization",
+                            "value": "Bearer {{jwt_token}}"
+                        }
+                    ],
+                    "url": {
+                        "raw": "{{booking_service_url}}/bookings/customer/1",
+                        "host": [
+                            "{{booking_service_url}}"
+                        ],
+                        "path": [
+                            "bookings",
+                            "customer",
+                            "1"
+                        ]
+                    },
+                    "description": "Get all bookings made by a specific customer.\nReplace 1 with the actual customerId.\nReturns booking history ordered by createdAt DESC.\nStatus: 200 OK"
+                },
+                "response": []
+            },
+            {
+                "name": "Get Bookings by Provider",
+                "request": {
+                    "method": "GET",
+                    "header": [
+                        {
+                            "key": "Authorization",
+                            "value": "Bearer {{jwt_token}}"
+                        }
+                    ],
+                    "url": {
+                        "raw": "{{booking_service_url}}/bookings/provider/1",
+                        "host": [
+                            "{{booking_service_url}}"
+                        ],
+                        "path": [
+                            "bookings",
+                            "provider",
+                            "1"
+                        ]
+                    },
+                    "description": "Get all bookings assigned to a specific service provider.\nReplace 1 with the actual providerId.\nReturns completed and upcoming services with customer info.\nStatus: 200 OK"
+                },
+                "response": []
+            },
+            {
+                "name": "Get All Bookings (Admin)",
+                "request": {
+                    "method": "GET",
+                    "header": [
+                        {
+                            "key": "Authorization",
+                            "value": "Bearer {{admin_jwt_token}}"
+                        }
+                    ],
+                    "url": {
+                        "raw": "{{booking_service_url}}/bookings",
+                        "host": [
+                            "{{booking_service_url}}"
+                        ],
+                        "path": [
+                            "bookings"
+                        ]
+                    },
+                    "description": "Get all bookings in the system (admin use).\nReturns all records ordered by createdAt DESC.\nStatus: 200 OK"
+                },
+                "response": []
+            },
+            {
+                "name": "Cancel Booking",
+                "request": {
+                    "method": "POST",
+                    "header": [
+                        {
+                            "key": "Authorization",
+                            "value": "Bearer {{jwt_token}}"
+                        }
+                    ],
+                    "url": {
+                        "raw": "{{booking_service_url}}/bookings/1/cancel",
+                        "host": [
+                            "{{booking_service_url}}"
+                        ],
+                        "path": [
+                            "bookings",
+                            "1",
+                            "cancel"
+                        ]
+                    },
+                    "description": "Cancel a confirmed booking.\nReplace 1 with the actual bookingId.\nOnly the customer who made the booking can cancel it (verified via JWT).\nOnly CONFIRMED bookings can be cancelled.\nFlow: Refunds wallet → updates status to CANCELLED → publishes RabbitMQ event.\nStatus: 200 OK\nError: 404 Not Found, 400 Bad Request (wrong customer), 409 Conflict (not CONFIRMED)"
+                },
+                "response": []
+            }
+        ]
+    }
+],
+"variable": [
+    {
+        "key": "user_service_url",
+        "value": "http://localhost:8081",
+        "type": "string"
+    },
+    {
+        "key": "catalog_service_url",
+        "value": "http://localhost:8083",
+        "type": "string"
+    },
+    {
+        "key": "booking_service_url",
+        "value": "http://localhost:8080/booking-service-1.0-SNAPSHOT/api",
+        "type": "string"
+    },
+    {
+        "key": "jwt_token",
+        "value": "your_jwt_token_here",
+        "type": "string"
+    },
+    {
+        "key": "admin_jwt_token",
+        "value": "your_admin_jwt_token_here",
+        "type": "string"
+    }
+]
+}

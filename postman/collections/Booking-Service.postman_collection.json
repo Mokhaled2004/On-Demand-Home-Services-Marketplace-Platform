@@ -1,0 +1,231 @@
+{
+    "info": {
+        "_postman_id": "booking-service-collection",
+        "name": "Booking Service",
+        "description": "Booking Service API - Jakarta EE / EJB on WildFly 40\nBase URL: http://localhost:8080/booking-service-1.0-SNAPSHOT/api\n\nAll endpoints require JWT token in Authorization header.\ncustomerId is extracted from the JWT automatically - never sent in the body.",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Create Booking",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    },
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{jwt_token}}"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"serviceOfferId\": 1\n}"
+                },
+                "url": {
+                    "raw": "{{booking_service_url}}/bookings",
+                    "host": [
+                        "{{booking_service_url}}"
+                    ],
+                    "path": [
+                        "bookings"
+                    ]
+                },
+                "description": "Create a new booking.\ncustomerId is extracted from the JWT token automatically.\n\nFlow:\n1. Validates service offer (calls Catalog Service)\n2. Verifies customer exists (calls User Service)\n3. Deducts wallet balance (calls User Service)\n4. Saves booking as CONFIRMED\n5. Publishes event to RabbitMQ\n\nOn insufficient balance: booking saved as FAILED, event published, 400 returned.\n\nidempotencyKey is optional - if provided, prevents duplicate bookings on retry.\n\nStatus: 201 Created\nError: 400 Bad Request (insufficient balance / invalid data)\n        409 Conflict (service slot already booked)"
+            },
+            "response": []
+        },
+        {
+            "name": "Get Booking by ID",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{jwt_token}}"
+                    }
+                ],
+                "url": {
+                    "raw": "{{booking_service_url}}/bookings/1",
+                    "host": [
+                        "{{booking_service_url}}"
+                    ],
+                    "path": [
+                        "bookings",
+                        "1"
+                    ]
+                },
+                "description": "Get a single booking by its ID.\nReplace 1 with the actual booking ID.\n\nStatus: 200 OK\nError: 404 Not Found"
+            },
+            "response": []
+        },
+        {
+            "name": "Get My Bookings (Customer)",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{jwt_token}}"
+                    }
+                ],
+                "url": {
+                    "raw": "{{booking_service_url}}/bookings/customer/1",
+                    "host": [
+                        "{{booking_service_url}}"
+                    ],
+                    "path": [
+                        "bookings",
+                        "customer",
+                        "1"
+                    ]
+                },
+                "description": "Get all bookings made by a specific customer.\nReplace 1 with the actual customerId.\nReturns booking history ordered by createdAt DESC.\n\nStatus: 200 OK"
+            },
+            "response": []
+        },
+        {
+            "name": "Get Bookings by Provider",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{jwt_token}}"
+                    }
+                ],
+                "url": {
+                    "raw": "{{booking_service_url}}/bookings/provider/1",
+                    "host": [
+                        "{{booking_service_url}}"
+                    ],
+                    "path": [
+                        "bookings",
+                        "provider",
+                        "1"
+                    ]
+                },
+                "description": "Get all bookings assigned to a specific service provider.\nReplace 1 with the actual providerId.\nShows completed and upcoming services.\n\nStatus: 200 OK"
+            },
+            "response": []
+        },
+        {
+            "name": "Get All Bookings (Admin)",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{admin_jwt_token}}"
+                    }
+                ],
+                "url": {
+                    "raw": "{{booking_service_url}}/bookings",
+                    "host": [
+                        "{{booking_service_url}}"
+                    ],
+                    "path": [
+                        "bookings"
+                    ]
+                },
+                "description": "Get all bookings in the system.\nReturns all records ordered by createdAt DESC.\nUse admin JWT token.\n\nStatus: 200 OK"
+            },
+            "response": []
+        },
+        {
+            "name": "Get Completed Bookings (Provider)",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{jwt_token}}"
+                    }
+                ],
+                "url": {
+                    "raw": "{{booking_service_url}}/bookings/provider/1/completed",
+                    "host": [
+                        "{{booking_service_url}}"
+                    ],
+                    "path": [
+                        "bookings",
+                        "provider",
+                        "1",
+                        "completed"
+                    ]
+                },
+                "description": "Requirement 9: Provider views completed services with customer names.\nReplace 1 with the actual providerId.\nReturns CONFIRMED and CANCELLED bookings enriched with customer username and email (fetched from User Service).\nStatus: 200 OK"
+            },
+            "response": []
+        },
+        {
+            "name": "Complete Booking (Provider)",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{jwt_token}}"
+                    }
+                ],
+                "url": {
+                    "raw": "{{booking_service_url}}/bookings/1/complete",
+                    "host": [
+                        "{{booking_service_url}}"
+                    ],
+                    "path": [
+                        "bookings",
+                        "1",
+                        "complete"
+                    ]
+                },
+                "description": "Provider marks a booking as COMPLETED after the service is done.\nReplace 1 with the actual bookingId.\n\nRules:\n- Only the provider assigned to the booking can complete it (verified via JWT)\n- Only CONFIRMED bookings can be completed\n\nAfter completing:\n- Provider can update the offer with new dates (PUT /provider/offers/{id})\n- New customers can then book the same offer again with the new dates\n\nStatus: 200 OK\nError: 404 Not Found\n        400 Bad Request (not your booking)\n        409 Conflict (booking not CONFIRMED)"
+            },
+            "response": []
+        },
+        {
+            "name": "Cancel Booking",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{jwt_token}}"
+                    }
+                ],
+                "url": {
+                    "raw": "{{booking_service_url}}/bookings/1/cancel",
+                    "host": [
+                        "{{booking_service_url}}"
+                    ],
+                    "path": [
+                        "bookings",
+                        "1",
+                        "cancel"
+                    ]
+                },
+                "description": "Cancel a confirmed booking.\nReplace 1 with the actual bookingId.\n\nRules:\n- Only the customer who made the booking can cancel it (verified via JWT)\n- Only CONFIRMED bookings can be cancelled\n\nFlow:\n1. Refunds wallet (calls User Service)\n2. Updates status to CANCELLED\n3. Publishes booking.cancelled event to RabbitMQ\n\nStatus: 200 OK\nError: 404 Not Found\n        400 Bad Request (not your booking)\n        409 Conflict (booking not in CONFIRMED state)"
+            },
+            "response": []
+        }
+    ],
+    "variable": [
+        {
+            "key": "booking_service_url",
+            "value": "http://localhost:8080/booking-service-1.0-SNAPSHOT/api",
+            "type": "string"
+        },
+        {
+            "key": "jwt_token",
+            "value": "your_jwt_token_here",
+            "type": "string"
+        },
+        {
+            "key": "admin_jwt_token",
+            "value": "your_admin_jwt_token_here",
+            "type": "string"
+        }
+    ]
+}

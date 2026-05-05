@@ -161,4 +161,35 @@ public class BookingRepository {
             em.close();
         }
     }
+
+    /**
+     * Check if an active (PENDING or CONFIRMED) booking already exists for this slot.
+     * CANCELLED, FAILED, COMPLETED bookings do NOT block re-booking.
+     */
+    public boolean existsActiveBookingForSlot(Long serviceOfferId,
+                                               java.time.LocalDateTime serviceStart,
+                                               java.time.LocalDateTime serviceEnd) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            Long count = em.createQuery(
+                "SELECT COUNT(b) FROM Booking b " +
+                "WHERE b.serviceOfferId = :offerId " +
+                "AND b.serviceStart = :start " +
+                "AND b.serviceEnd = :end " +
+                "AND b.status IN :statuses",
+                Long.class
+            )
+            .setParameter("offerId", serviceOfferId)
+            .setParameter("start", serviceStart)
+            .setParameter("end", serviceEnd)
+            .setParameter("statuses", java.util.List.of(
+                    Booking.BookingStatus.PENDING,
+                    Booking.BookingStatus.CONFIRMED
+            ))
+            .getSingleResult();
+            return count > 0;
+        } finally {
+            em.close();
+        }
+    }
 }

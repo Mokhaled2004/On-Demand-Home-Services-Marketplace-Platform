@@ -109,6 +109,14 @@ public class BookingOrchestrationBean {
             return BookingResponse.from(existing.get());
         }
 
+        // Check no active booking exists for this offer+slot (PENDING or CONFIRMED only)
+        boolean slotTaken = bookingRepository.existsActiveBookingForSlot(
+                request.getServiceOfferId(), serviceStart, serviceEnd);
+        if (slotTaken) {
+            throw new ServiceUnavailableException(
+                    "This service slot is already booked. Please choose a different time.");
+        }
+
         // 6. Save as PENDING
         Booking booking = new Booking();
         booking.setCustomerId(customerId);
