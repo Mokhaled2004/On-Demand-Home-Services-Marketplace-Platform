@@ -4,33 +4,25 @@
              xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_2.xsd"
              version="3.2">
 
-    <persistence-unit name="bookingPU" transaction-type="JTA">
+    <persistence-unit name="bookingPU" transaction-type="RESOURCE_LOCAL">
 
-        <!-- Entity classes -->
-        <class>com.marketplace.booking.entity.Booking</class>
+        <class>com.marketplace.bookingservice.entity.Booking</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
 
         <properties>
             <!-- ===== Neon PostgreSQL Connection ===== -->
-            <property name="jakarta.persistence.jdbc.driver"   value="org.postgresql.Driver"/>
+            <property name="jakarta.persistence.jdbc.driver"
+                      value="org.postgresql.Driver"/>
             <property name="jakarta.persistence.jdbc.url"
                       value="jdbc:postgresql://ep-late-mountain-ami1fmbj-pooler.c-5.us-east-1.aws.neon.tech/booking_db?sslmode=require&amp;channel_binding=require"/>
             <property name="jakarta.persistence.jdbc.user"     value="neondb_owner"/>
             <property name="jakarta.persistence.jdbc.password" value="npg_kJEMe1DKpw8i"/>
 
-            <!-- ===== Hibernate / WildFly settings ===== -->
-            <!-- validate = trust the schema we created in Neon; never drop/recreate -->
-            <property name="hibernate.hbm2ddl.auto"            value="update"/>
-            <property name="hibernate.dialect"                 value="org.hibernate.dialect.PostgreSQLDialect"/>
-            <property name="hibernate.show_sql"                value="true"/>
-            <property name="hibernate.format_sql"              value="true"/>
-
-            <!-- WildFly datasource: use the JDBC URL directly (no JNDI needed) -->
-            <property name="hibernate.connection.provider_class"
-                      value="org.hibernate.hikaricp.internal.HikariCPConnectionProvider"/>
-            <property name="hibernate.hikari.minimumIdle"       value="2"/>
-            <property name="hibernate.hikari.maximumPoolSize"   value="10"/>
-            <property name="hibernate.hikari.connectionTimeout" value="20000"/>
-            <property name="hibernate.hikari.idleTimeout"       value="300000"/>
+            <!-- ===== Hibernate settings ===== -->
+            <property name="hibernate.hbm2ddl.auto"  value="update"/>
+            <property name="hibernate.dialect"        value="org.hibernate.dialect.PostgreSQLDialect"/>
+            <property name="hibernate.show_sql"       value="true"/>
+            <property name="hibernate.format_sql"     value="true"/>
         </properties>
 
     </persistence-unit>

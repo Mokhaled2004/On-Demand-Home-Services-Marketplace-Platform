@@ -5,13 +5,15 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
- * Response DTO returned to the client for booking operations.
- * Maps from the Booking entity — never exposes the entity directly.
+ * Extended booking response that includes customer name.
+ * Used for provider's "view completed services" endpoint (Requirement 9).
  */
-public class BookingResponse {
+public class BookingWithCustomerResponse {
 
     private Long id;
     private Long customerId;
+    private String customerName;   // fetched from User Service
+    private String customerEmail;  // fetched from User Service
     private Long serviceOfferId;
     private Long providerId;
     private LocalDateTime bookingDate;
@@ -19,39 +21,40 @@ public class BookingResponse {
     private LocalDateTime serviceEnd;
     private BigDecimal amount;
     private String status;
-    private String idempotencyKey;
-    private Boolean eventPublished;
     private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 
-    public BookingResponse() {}
+    public BookingWithCustomerResponse() {}
 
-    /** Static factory — converts a Booking entity to a BookingResponse DTO */
-    public static BookingResponse from(Booking booking) {
-        BookingResponse r = new BookingResponse();
-        r.id              = booking.getId();
-        r.customerId      = booking.getCustomerId();
-        r.serviceOfferId  = booking.getServiceOfferId();
-        r.providerId      = booking.getProviderId();
-        r.bookingDate     = booking.getBookingDate();
-        r.serviceStart    = booking.getServiceStart();
-        r.serviceEnd      = booking.getServiceEnd();
-        r.amount          = booking.getAmount();
-        r.status          = booking.getStatus().name();
-        r.idempotencyKey  = booking.getIdempotencyKey();
-        r.eventPublished  = booking.getEventPublished();
-        r.createdAt       = booking.getCreatedAt();
-        r.updatedAt       = booking.getUpdatedAt();
+    public static BookingWithCustomerResponse from(Booking booking,
+                                                    String customerName,
+                                                    String customerEmail) {
+        BookingWithCustomerResponse r = new BookingWithCustomerResponse();
+        r.id             = booking.getId();
+        r.customerId     = booking.getCustomerId();
+        r.customerName   = customerName;
+        r.customerEmail  = customerEmail;
+        r.serviceOfferId = booking.getServiceOfferId();
+        r.providerId     = booking.getProviderId();
+        r.bookingDate    = booking.getBookingDate();
+        r.serviceStart   = booking.getServiceStart();
+        r.serviceEnd     = booking.getServiceEnd();
+        r.amount         = booking.getAmount();
+        r.status         = booking.getStatus().name();
+        r.createdAt      = booking.getCreatedAt();
         return r;
     }
-
-    // ===== Getters & Setters =====
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
     public Long getCustomerId() { return customerId; }
     public void setCustomerId(Long customerId) { this.customerId = customerId; }
+
+    public String getCustomerName() { return customerName; }
+    public void setCustomerName(String customerName) { this.customerName = customerName; }
+
+    public String getCustomerEmail() { return customerEmail; }
+    public void setCustomerEmail(String customerEmail) { this.customerEmail = customerEmail; }
 
     public Long getServiceOfferId() { return serviceOfferId; }
     public void setServiceOfferId(Long serviceOfferId) { this.serviceOfferId = serviceOfferId; }
@@ -74,15 +77,6 @@ public class BookingResponse {
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
 
-    public String getIdempotencyKey() { return idempotencyKey; }
-    public void setIdempotencyKey(String idempotencyKey) { this.idempotencyKey = idempotencyKey; }
-
-    public Boolean getEventPublished() { return eventPublished; }
-    public void setEventPublished(Boolean eventPublished) { this.eventPublished = eventPublished; }
-
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
-
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
-    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
 }

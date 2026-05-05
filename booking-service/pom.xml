@@ -74,6 +74,7 @@
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>42.7.3</version>
+            <!-- NOT provided — WildFly doesn't ship PostgreSQL driver, we bundle it -->
         </dependency>
 
         <!-- ===== Jackson JSON (for REST client calls & response parsing) ===== -->
