@@ -160,8 +160,15 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleDataIntegrityViolation(
             org.springframework.dao.DataIntegrityViolationException ex) {
         log.warn("Data integrity violation: {}", ex.getMessage());
+        String message = "A resource with the same unique value already exists";
+        
+        if (ex.getMessage() != null && ex.getMessage().contains("service_offers")) {
+            message = "An identical offer already exists for this provider, category, and time slot. " +
+                    "Please use a different title, price, or availability window.";
+        }
+        
         return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(ApiResponse.error("A resource with the same unique value already exists"));
+                .body(ApiResponse.error(message));
     }
 
     // ─── 500 ────────────────────────────────────────────────────────────────

@@ -20,12 +20,15 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "service_offers")
+@Table(name = "service_offers", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"provider_id", "category_id", "title", "available_from", "available_to"})
+})
 @Check(constraints = "price > 0")
 @Check(constraints = "available_to > available_from")
 @EntityListeners(AuditingEntityListener.class)
