@@ -40,14 +40,15 @@ public class NotificationServiceImpl implements NotificationService {
                 + "Amount charged: $" + event.getAmount() + ". Thank you!"
         );
 
-        // Notify provider
+        // Notify provider with customer name
         if (event.getProviderId() != null) {
+            String customerName = event.getCustomerName() != null ? event.getCustomerName() : "Customer";
             createAndLog(
                 event.getProviderId(),
                 event.getBookingId(),
                 Notification.NotificationType.BOOKING_CONFIRMED,
                 "New Booking Received!",
-                "You have a new confirmed booking #" + event.getBookingId() + ". "
+                "You have a new confirmed booking #" + event.getBookingId() + " from " + customerName + ". "
                     + "Service amount: $" + event.getAmount() + "."
             );
         }
@@ -85,14 +86,15 @@ public class NotificationServiceImpl implements NotificationService {
                 + "Amount of $" + event.getAmount() + " has been refunded to your wallet."
         );
 
-        // Notify provider
+        // Notify provider with customer name
         if (event.getProviderId() != null) {
+            String customerName = event.getCustomerName() != null ? event.getCustomerName() : "Customer";
             createAndLog(
                 event.getProviderId(),
                 event.getBookingId(),
                 Notification.NotificationType.BOOKING_CANCELLED,
                 "Booking Cancelled by Customer",
-                "Booking #" + event.getBookingId() + " has been cancelled by the customer."
+                "Booking #" + event.getBookingId() + " from " + customerName + " has been cancelled."
             );
         }
     }

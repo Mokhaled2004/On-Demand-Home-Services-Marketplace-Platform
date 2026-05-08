@@ -1,19 +1,33 @@
+server:
+  port: 8084
+
 spring:
   application:
-    name: user-service
+    name: notification-service
+
+  # ===== Neon PostgreSQL =====
   datasource:
-    url: jdbc:postgresql://ep-late-mountain-ami1fmbj-pooler.c-5.us-east-1.aws.neon.tech/user_service_db?sslmode=require&channel_binding=require
+    url: jdbc:postgresql://ep-late-mountain-ami1fmbj-pooler.c-5.us-east-1.aws.neon.tech/notification_service_db?sslmode=require&channel_binding=require
     username: neondb_owner
     password: npg_kJEMe1DKpw8i
     driver-class-name: org.postgresql.Driver
+
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
     show-sql: false
+
+  # ===== RabbitMQ =====
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
   jackson:
     serialization:
       write-dates-as-timestamps: false
@@ -23,6 +37,7 @@ spring:
     resources:
       add-mappings: false
 
+# ===== Eureka =====
 eureka:
   client:
     service-url:
@@ -33,10 +48,8 @@ eureka:
     prefer-ip-address: true
     instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
 
-server:
-  port: 8081
-
 logging:
   level:
     root: INFO
-    com.marketplace: DEBUG
+    com.marketplace.notification: DEBUG
+    org.springframework.amqp: DEBUG
