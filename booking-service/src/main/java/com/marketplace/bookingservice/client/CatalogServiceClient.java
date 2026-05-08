@@ -126,6 +126,32 @@ public class CatalogServiceClient {
     }
 
     /**
+     * Reactivate offer after booking is CANCELLED.
+     * PATCH /internal/offers/{offerId}/reactivate
+     * No JWT needed — internal endpoint.
+     */
+    public void reactivateOffer(Long offerId) {
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(CATALOG_SERVICE_BASE + "/internal/offers/" + offerId + "/reactivate"))
+                    .header("Content-Type", "application/json")
+                    .method("PATCH", HttpRequest.BodyPublishers.noBody())
+                    .timeout(Duration.ofSeconds(10))
+                    .build();
+
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() == 200) {
+                LOG.info("Offer " + offerId + " reactivated after booking cancelled.");
+            } else {
+                LOG.warning("Failed to reactivate offer " + offerId + ". Status=" + response.statusCode());
+            }
+        } catch (Exception e) {
+            // Don't fail the cancellation if this call fails — log and continue
+            LOG.warning("Could not reactivate offer " + offerId + ": " + e.getMessage());
+        }
+    }
+
+    /**
      * Helper: extract price from offer JsonNode returned by getServiceOffer()
      */
     public BigDecimal extractPrice(JsonNode offerData) {

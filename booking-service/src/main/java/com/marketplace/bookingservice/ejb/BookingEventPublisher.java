@@ -105,14 +105,15 @@ public class BookingEventPublisher {
      * Notification Service listens on this to notify customer + provider.
      */
     @Lock(LockType.READ)
-    public void publishBookingConfirmed(Long bookingId, Long customerId,
+    public void publishBookingConfirmed(Long bookingId, Long customerId, String customerName,
                                         Long providerId, BigDecimal amount) {
         Map<String, Object> payload = new HashMap<>();
-        payload.put("eventType",  "BOOKING_CONFIRMED");
-        payload.put("bookingId",  bookingId);
-        payload.put("customerId", customerId);
-        payload.put("providerId", providerId);
-        payload.put("amount",     amount);
+        payload.put("eventType",    "BOOKING_CONFIRMED");
+        payload.put("bookingId",    bookingId);
+        payload.put("customerId",   customerId);
+        payload.put("customerName", customerName != null ? customerName : "Customer");
+        payload.put("providerId",   providerId);
+        payload.put("amount",       amount);
 
         publish("booking.confirmed", payload);
     }
@@ -139,14 +140,15 @@ public class BookingEventPublisher {
      * Notification Service listens on this to notify customer + provider of cancellation.
      */
     @Lock(LockType.READ)
-    public void publishBookingCancelled(Long bookingId, Long customerId,
+    public void publishBookingCancelled(Long bookingId, Long customerId, String customerName,
                                         Long providerId, BigDecimal amount) {
         Map<String, Object> payload = new HashMap<>();
-        payload.put("eventType",  "BOOKING_CANCELLED");
-        payload.put("bookingId",  bookingId);
-        payload.put("customerId", customerId);
-        payload.put("providerId", providerId);
-        payload.put("amount",     amount);
+        payload.put("eventType",    "BOOKING_CANCELLED");
+        payload.put("bookingId",    bookingId);
+        payload.put("customerId",   customerId);
+        payload.put("customerName", customerName != null ? customerName : "Customer");
+        payload.put("providerId",   providerId);
+        payload.put("amount",       amount);
 
         publish("booking.cancelled", payload);
     }

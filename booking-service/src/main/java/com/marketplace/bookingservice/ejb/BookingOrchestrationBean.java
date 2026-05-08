@@ -76,6 +76,11 @@ public class BookingOrchestrationBean {
             throw new IllegalArgumentException("Customer not found: id=" + customerId);
         }
 
+        // Extract customer name for notifications
+        String customerName = customerData.has("username")
+                ? customerData.get("username").asText()
+                : "Customer";
+
         // 4. Resolve serviceStart / serviceEnd
         // If not provided in request, use the offer's availableFrom / availableTo
         LocalDateTime serviceStart = request.getServiceStart();
@@ -140,7 +145,7 @@ public class BookingOrchestrationBean {
             // SUCCESS
             bookingRepository.updateStatus(bookingId, Booking.BookingStatus.CONFIRMED);
             booking.setStatus(Booking.BookingStatus.CONFIRMED);
-            eventPublisher.publishBookingConfirmed(bookingId, customerId, providerId, price);
+            eventPublisher.publishBookingConfirmed(bookingId, customerId, customerName, providerId, price);
             bookingRepository.markEventPublished(bookingId);
             // Deactivate the offer so no other customer can book the same slot
             catalogServiceClient.deactivateOffer(request.getServiceOfferId());
@@ -201,8 +206,22 @@ public class BookingOrchestrationBean {
         bookingRepository.updateStatus(bookingId, Booking.BookingStatus.CANCELLED);
         booking.setStatus(Booking.BookingStatus.CANCELLED);
 
+        // Fetch customer name for notification
+        String customerName = "Customer";
+        try {
+            JsonNode customerData = userServiceClient.getUser(customerId, jwtToken);
+            if (customerData != null && customerData.has("username")) {
+                customerName = customerData.get("username").asText();
+            }
+        } catch (Exception e) {
+            LOG.warning("Could not fetch customer name for cancellation notification: " + e.getMessage());
+        }
+
         eventPublisher.publishBookingCancelled(
-                bookingId, customerId, booking.getProviderId(), booking.getAmount());
+                bookingId, customerId, customerName, booking.getProviderId(), booking.getAmount());
+
+        // Reactivate the offer so it can be booked again
+        catalogServiceClient.reactivateOffer(booking.getServiceOfferId());
 
         LOG.info("Booking CANCELLED. id=" + bookingId);
         return BookingResponse.from(booking);
